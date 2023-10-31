@@ -168,51 +168,31 @@ jobs:
 workflows:
   deploy:
     jobs:
-      - build-and-host-engine:
-          context: 
-            - AWS
-            - Helm
-            - slack
       - build-and-host-g2p-sandbox:
-          requires:
-            - build-and-host-engine
           context: 
             - AWS
             - Helm
             - slack
-      - build-host-g2p-fyn-chart:
+      - upgrade-helm-chart:
+          cluster-name: sit
           requires:
             - build-and-host-g2p-sandbox
           context: 
             - AWS
             - Helm
-      - build-and-host-g2p-sandbox-security:
-          requires:
-            - build-host-g2p-fyn-chart
-          context: 
-            - AWS
-            - Helm
-            - slack      
-      - upgrade-helm-chart:
-          cluster-name: sit
-          requires:
-            - build-host-g2p-fyn-chart
-          context: 
-            - AWS
-            - Helm
             - slack
-      - test-chart-gov:
-          requires:
-            - upgrade-helm-chart
-          context: 
-            - AWS
-            - Helm
-            - slack
-            - Ngrok
-      - test-chart-ams:
-          requires:
-            - upgrade-helm-chart
-          context:
-            - AWS
-            - Helm
-            - slack
+#      - test-chart-gov:
+#          requires:
+#            - upgrade-helm-chart
+#          context: 
+#            - AWS
+#            - Helm
+#            - slack
+#            - Ngrok
+#      - test-chart-ams:
+#          requires:
+#            - upgrade-helm-chart
+#          context:
+#            - AWS
+#            - Helm
+#            - slack
