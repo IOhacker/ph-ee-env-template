@@ -24,7 +24,8 @@ jobs:
       - run: helm package helm/g2p-sandbox
       - run: helm repo index .
       - run: echo "$CERT_FILE" > b64encoded.pem
-      - run: chmod 400 b64encoded.pem
+      - run: cat b64encoded.pem
+      - run: chmod 600 b64encoded.pem
       - run: scp -o StrictHostKeyChecking=No -i b64encoded.pem index.yaml ph-ee-g2psandbox-0.0.0.tgz azureuser@172.174.237.43:~/
       - run: ssh -i b64encoded.pem -o StrictHostKeyChecking=No azureuser@172.174.237.43 sudo mv -t /usr/share/nginx/html/phee/0.0.0 index.yaml ph-ee-g2psandbox-0.0.0.tgz
 workflows:
