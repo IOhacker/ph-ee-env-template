@@ -23,7 +23,7 @@ jobs:
       - run: helm dep up helm/g2p-sandbox
       - run: helm package helm/g2p-sandbox
       - run: helm repo index .
-      - run: echo "$CERT_FILE" > b64encoded.pem
+      - run: echo "$CERT_FILE" | base64 --decode > b64encoded.pem
       - run: cat b64encoded.pem
       - run: chmod 600 b64encoded.pem
       - run: scp -v -o StrictHostKeyChecking=No -i b64encoded.pem index.yaml ph-ee-g2psandbox-0.0.0.tgz azureuser@172.174.237.43:~/
