@@ -28,6 +28,33 @@ jobs:
       - run: chmod 600 b64encoded.pem
       - run: scp -v -o StrictHostKeyChecking=No -i b64encoded.pem index.yaml ph-ee-g2psandbox-0.0.0.tgz azureuser@172.174.237.43:~/
       - run: ssh -v -i b64encoded.pem -o StrictHostKeyChecking=No azureuser@172.174.237.43 sudo mv -t /usr/share/nginx/html/phee/0.0.0 index.yaml ph-ee-g2psandbox-0.0.0.tgz
+  upgrade-helm-chart:
+    docker:
+      - image: cimg/python:3.10
+    parameters:
+      cluster-name:
+        description: "phee-mifos"
+        type: string
+      resource-group:
+        description: "universe"
+        type: string
+    steps:
+      - azure-aks/update-kubeconfig-with-credentials:
+          cluster-name: << parameters.cluster-name >>
+          install-kubectl: true
+          perform-login: true
+          resource-group: << parameters.resource-group >>
+      - helm/install-helm-client:
+          version: "v3.8.2"
+      - run: helm ls --namespace=paymenthub
+      - helm/upgrade-helm-chart:
+          chart: "https://helm-charts.mifos.community/phee/0.0.0/ph-ee-g2psandbox-0.0.0.tgz"
+          release-name: g2p-sandbox
+          namespace: paymenthub
+          recreate-pods: true
+          add-repo: "https://fynarfin.io/images/ph-ee-g2psandbox-fynarfin"
+          wait: true
+          timeout: "300s"    
 workflows:
   deploy:
     jobs:
