@@ -63,5 +63,12 @@ workflows:
             - Azure
             - Helm
             - slack
-            
+      - upgrade-helm-chart:
+          cluster-name: phee-mifos
+          requires:
+            - build-and-host-g2p-sandbox
+          context: 
+            - Azure
+            - Helm
+            - slack      
 
