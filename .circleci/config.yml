@@ -40,10 +40,10 @@ jobs:
         type: string
     steps:
       - azure-aks/update-kubeconfig-with-credentials:
-          cluster-name: << parameters.cluster-name >>
+          cluster-name: "phee-mifos"
           install-kubectl: true
           perform-login: true
-          resource-group: << parameters.resource-group >>
+          resource-group: "universe"
       - helm/install-helm-client:
           version: "v3.8.2"
       - run: helm ls --namespace=paymenthub
@@ -64,7 +64,8 @@ workflows:
             - Helm
             - slack
       - upgrade-helm-chart:
-          cluster-name: phee-mifos
+          cluster-name: "phee-mifos"
+          resource-group: "universe"
           requires:
             - build-and-host-g2p-sandbox
           context: 
