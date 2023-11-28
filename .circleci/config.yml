@@ -48,11 +48,11 @@ jobs:
           version: "v3.8.2"
       - run: helm ls --namespace=paymenthub
       - helm/upgrade-helm-chart:
-          chart: "https://helm-charts.mifos.community/phee/0.0.0/ph-ee-g2psandbox-0.0.0.tgz"
+          chart: "https://fynarfin.io/images/ph-ee-g2psandbox-1.3.0/ph-ee-g2psandbox-1.3.0.tgz"
           release-name: g2p-sandbox
           namespace: paymenthub
           recreate-pods: true
-          add-repo: "https://helm-charts.mifos.community/phee/0.0.0/"
+          add-repo: "https://fynarfin.io/images/ph-ee-g2psandbox-1.3.0"
           wait: true
           timeout: "300s"    
 workflows:
