@@ -56,7 +56,7 @@ jobs:
       TERM: dumb
       FY_SIT_RELEASE: 1.3.0
     steps:
-      - run: git clone https://github.com/openmf/ph-ee-env-labs
+      - run: git clone https://github.com/IOhacker/ph-ee-env-template.git
       - run: cd ph-ee-env-labs && git checkout v$FY_SIT_RELEASE-release && cd ..
       - run: rm -f ph-ee-env-labs/helm/g2p-sandbox-fynarfin-SIT/Chart.lock ph-ee-env-labs/helm/g2p-sandbox-fynarfin-SIT/requirements.lock ph-ee-env-labs/helm/g2p-sandbox-fynarfin-SIT/charts/*
       - helm/install-helm-client:
@@ -107,6 +107,27 @@ jobs:
         default: true
         type: boolean
         description: ""
+    steps:
+      - azure-aks/update-kubeconfig-with-credentials:
+          cluster-name: "phee-mifos"
+          install-kubectl: true
+          perform-login: true
+          resource-group: "universe"
+      - helm/install-helm-client:
+          version: "v3.8.2"
+      - run: helm ls --namespace=paymenthub-release
+      - kubernetes/install-kubectl
+      - run: "kubectl delete clusterroles `kubectl get clusterroles |grep c-role|cut -d ' ' -f1` || echo ' ' "
+      - run: "kubectl delete clusterrolebinding `kubectl get clusterrolebinding |grep c-role|cut -d ' ' -f1` || echo ' ' "
+      #- run: "kubectl delete crd `kubectl get crd|grep kong |cut -d ' ' -f1` || echo ' ' "
+      - helm/upgrade-helm-chart:
+          chart: "https://helm-charts.mifos.community/phee/images/ph-ee-g2psandbox-1.3.0/ph-ee-g2psandbox-1.3.0.tgz"
+          release-name: ph-ee-g2psandbox
+          namespace: paymenthub-release
+          recreate-pods: true
+          add-repo: "https://helm-charts.mifos.community/phee/images/ph-ee-g2psandbox-1.3.0"
+          wait: true
+          timeout: "300s"
   create-secret-paymenthub-namespace:
     docker:
       - image: cimg/base:2022.06
@@ -118,9 +139,11 @@ jobs:
             version: 20.10.14
       - kubernetes/install-kubectl
       - run: git clone https://github.com/openmf/ph-ee-env-labs
-      - aws-eks/update-kubeconfig-with-authenticator:
-          cluster-name: "sit"
-          aws-region: "$REGION"
+      - azure-aks/update-kubeconfig-with-credentials:
+          cluster-name: "phee-mifos"
+          install-kubectl: true
+          perform-login: true
+          resource-group: "universe"
       - run: |
           cd ph-ee-env-labs
           export ENV_NAMESPACE=$NAMESPACE
